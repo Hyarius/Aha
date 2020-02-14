@@ -1,5 +1,54 @@
 #include "aha.h"
 
+class c_chunk
+{
+private:
+	Vector3 pos;
+	map<Vector3, int> voxels;
+
+	c_mesh *mesh;
+	c_mesh *mesh_transparent;
+public:
+	c_chunk(Vector3 pos);
+
+	void add_voxel(Vector3 pos, int type)
+	{
+		voxels[pos] = type;
+	}
+};
+
+class c_board
+{
+private:
+	map<Vector2, c_chunk *> chunks;
+public:
+	c_board();
+
+	Vector2 get_chunk_pos(Vector3 voxel_pos)
+	{
+		Vector2 chunk_pos;
+
+		chunk_pos = Vector2();
+		return (chunk_pos);
+	}
+	Vector3 get_voxel_rel_pos(Vector3 voxel_pos)
+	{
+		Vector2 chunk_pos;
+		Vector3 rel_pos;
+
+		chunk_pos = get_chunk_pos(voxel_pos);
+		rel_pos = Vector3(voxel_pos.x % chunk_size.x, voxel_pos.y, voxel_pos.z % chunk_size.y);
+		return (rel_pos);
+	}
+	void add_voxel(Vector3 pos, int type)
+	{
+		Vector2 chunk_pos = get_chunk_pos(pos);
+		Vector3 rel_pos = get_voxel_rel_pos(pos);
+
+		chunks[chunk_pos]->add_voxel(rel_pos, type);
+	}
+};
+
 class c_board_widget : public c_widget
 {
 private:
