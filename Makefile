@@ -56,7 +56,6 @@ CC=         g++
 all:			$(NAME)
 
 install:
-				make libs
 				make -C lib/jgl
 libs:
 				$(foreach lib, $(LIB_DWN), $(DWL) install $(lib); )
