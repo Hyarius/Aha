@@ -108,15 +108,15 @@ public:
 			if (_engine->mesh(i)->transparency() != 1 && _engine->mesh(i)->transparency() != 0)
 				_engine->mesh(i)->render(_camera);
 
-		draw_text("Camera pos = " + _camera->pos().str(), coord, 14, 0, text_color::white);
-		draw_text("Target pos = " + _target.str(), coord + Vector2(0, 16), 14, 0, text_color::white);
-		draw_text("Zoom = " + ftoa(_zoom, 4), coord + Vector2(0, 32), 14, 0, text_color::white);
+		draw_text("Camera pos = " + _camera->pos().str(), coord, 16, 0, text_color::white);
+		draw_text("Target pos = " + _target.str(), coord + Vector2(0, 18), 16, 0, text_color::white);
+		draw_text("Zoom = " + ftoa(_zoom, 4), coord + Vector2(0, 36), 16, 0, text_color::white);
 	}
 	bool handle_mouse()
 	{
 		if (g_mouse->wheel != 0)
 		{
-			if (g_mouse->wheel < 0 || _zoom < 0)
+			if (g_mouse->wheel < 0 || _zoom < 10)
 			{
 				_zoom += (g_mouse->wheel > 0 ? 1 : -1);
 				_camera->move(_camera->forward().normalize() * (g_mouse->wheel < 0 ? 0.5f : -0.5f));
@@ -187,7 +187,7 @@ public:
 int		main(void)
 {
 	c_application app = c_application("Aha (c)", Vector2(840, 680));
-	app.set_font_path("ressources/font/manaspc.ttf");
+	app.set_font_path("ressources/font/karma suture.ttf");
 	app.set_max_fps(660);
 
 	c_board_widget render = c_board_widget();
@@ -198,7 +198,7 @@ int		main(void)
 
 	for (size_t i = 0; i < 10; i++)
 		for (size_t j = 0; j < 10; j++)
-			render.add_voxel(primitive_voxel(Vector3(i, 0.0f, j), tile, 0));
+			render.add_voxel(primitive_voxel(Vector3(i, 0.0f, j), tile, (i == 0 || i == 9 || j == 0 || j == 9 ? 1 : 0)));
 
 	render.board()->bake();
 	render.board()->set_texture(tile);
