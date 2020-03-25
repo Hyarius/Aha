@@ -1,197 +1,24 @@
 #include "aha.h"
 
-class c_chunk
-{
-private:
-	Vector3 pos;
-	map<Vector3, int> voxels;
+c_tileset* block_tile = nullptr;
+c_tileset* icon_tile = nullptr;
 
-	c_mesh *mesh;
-	c_mesh *mesh_transparent;
-public:
-	c_chunk(Vector3 pos);
+Vector3 chunk_size = { 15, 256, 15 };
 
-	void add_voxel(Vector3 pos, int type)
-	{
-		voxels[pos] = type;
-	}
-};
-
-class c_board
-{
-private:
-	Vector2 chunk_size;
-	map<Vector2, c_chunk *> chunks;
-public:
-	c_board()
-	{
-		chunk_size = Vector2(13, 13);
-	}
-
-	Vector2 get_chunk_pos(Vector3 voxel_pos)
-	{
-		Vector2 chunk_pos;
-
-		chunk_pos = Vector2();
-		return (chunk_pos);
-	}
-	Vector3 get_voxel_rel_pos(Vector3 voxel_pos)
-	{
-		Vector2 chunk_pos;
-		Vector3 rel_pos;
-
-		chunk_pos = get_chunk_pos(voxel_pos);
-		rel_pos = Vector3((int)(voxel_pos.x) % (int)(chunk_size.x), (int)(voxel_pos.y), (int)(voxel_pos.z) % (int)(chunk_size.y));
-		return (rel_pos);
-	}
-	void add_voxel(Vector3 pos, int type)
-	{
-		Vector2 chunk_pos = get_chunk_pos(pos);
-		Vector3 rel_pos = get_voxel_rel_pos(pos);
-
-		chunks[chunk_pos]->add_voxel(rel_pos, type);
-	}
-};
-
-class c_board_widget : public c_widget
-{
-private:
-	float _zoom;
-	c_camera *_camera;
-	c_engine *_engine;
-	c_mesh *_board;
-	c_mesh *_transparent_board;
-public:
-	c_board_widget(c_widget *p_parent = nullptr) : c_widget(p_parent)
-	{
-		_zoom = 0.0f;
-		_camera = new c_camera(Vector3(2, 2, 2), 70.0f, 0.1f, 1000.0f);
-		_camera->look_at(0);
-		_engine = new c_engine();
-		_board = _engine->add_mesh(new c_mesh(0));
-		_transparent_board = _engine->add_mesh(new c_mesh(0));
-		_transparent_board->set_transparency(0.5f);
-	}
-	c_camera* camera(){return (_camera);}
-	c_engine* engine(){return (_engine);}
-	void set_geometry_imp(Vector2 p_anchor, Vector2 p_area)
-	{
-
-	}
-	c_mesh *board(){return (_board);}
-	c_mesh *transparent_board(){return (_transparent_board);}
-	void add_voxel(c_mesh *p_mesh)
-	{
-		if (p_mesh->transparency() == 1)
-			_board->add_component(p_mesh);
-		else
-			_transparent_board->add_component(p_mesh);
-	}
-	c_mesh *add_mesh(c_mesh *p_mesh)
-	{
-		_engine->add_mesh(p_mesh);
-		return (p_mesh);
-	}
-	void render()
-	{
-		static Vector2		coord = Vector2(20, 20);
-		_viewport->use();
-		glClear(GL_DEPTH_BUFFER_BIT);
-
-		for (size_t i = 0; i < _engine->meshes().size(); i++)
-			if (_engine->mesh(i)->transparency() == 1.0f)
-				_engine->mesh(i)->render(_camera);
-
-		for (size_t i = 0; i < _engine->meshes().size(); i++)
-			if (_engine->mesh(i)->transparency() != 1 && _engine->mesh(i)->transparency() != 0)
-				_engine->mesh(i)->render(_camera);
-
-		size_t i = 0;
-		draw_text("Camera pos = " + _camera->pos().str(), coord + Vector2(0, 16 * i++), 16, 0, text_color::white);
-		draw_text("Direction_list = " + _camera->dir_light().str(), coord + Vector2(0, 16 * i++), 16, 0, text_color::white);
-		for (size_t j = 0; j < 6; j++)
-			draw_text("Normale first voxel face [" + to_string(j) + "]= " + _engine->mesh(0)->faces(j)->normale.str(), coord + Vector2(0, 16 * i++), 16, 0, text_color::white);
-		draw_text("Zoom = " + ftoa(_zoom, 4), coord + Vector2(0, 16 * i++), 16, 0, text_color::white);
-	}
-	bool handle_mouse()
-	{
-		if (g_mouse->wheel != 0)
-		{
-			if (g_mouse->wheel < 0 || _zoom < 10)
-			{
-				_zoom += (g_mouse->wheel > 0 ? 1 : -1);
-				_camera->move(_camera->forward().normalize() * (g_mouse->wheel < 0 ? 0.5f : -0.5f));
-			}
-		}
-		if (get_mouse()->get_button(mouse_button::middle) == mouse_state::down)
-		{
-			_camera->rotate(get_mouse()->rel_pos.x * g_application->fps_ratio() * 3, get_mouse()->rel_pos.y * g_application->fps_ratio() * 3);
-		}
-		return (false);
-	}
-	bool handle_keyboard()
-	{
-		Vector3 delta;
-
-		if (g_keyboard->get_key(SDL_SCANCODE_SPACE) == key_state::down)
-		{
-			delta = Vector3(0.0f, 0.25f, 0.0f) * g_application->fps_ratio();
-			_camera->move(delta);
-		}
-		if (g_keyboard->get_key(SDL_SCANCODE_LCTRL) == key_state::down)
-		{
-			delta = Vector3(0.0f, -0.25f, 0.0f) * g_application->fps_ratio();
-			_camera->move(delta);
-		}
-		if (g_keyboard->get_key(SDL_SCANCODE_W) == key_state::down)
-		{
-			delta = _camera->forward() * Vector3(0.25f, 0.0f, 0.25f) * -g_application->fps_ratio();
-			_camera->move(delta);
-		}
-		if (g_keyboard->get_key(SDL_SCANCODE_S) == key_state::down)
-		{
-			delta = _camera->forward() * Vector3(0.25f, 0.0f, 0.25f) * g_application->fps_ratio();
-			_camera->move(delta);
-		}
-		if (g_keyboard->get_key(SDL_SCANCODE_A) == key_state::down)
-		{
-			delta = _camera->right() * Vector3(0.25f, 0.0f, 0.25f) * -g_application->fps_ratio();
-			_camera->move(delta);
-		}
-		if (g_keyboard->get_key(SDL_SCANCODE_D) == key_state::down)
-		{
-			delta = _camera->right() * Vector3(0.25f, 0.0f, 0.25f) * g_application->fps_ratio();
-			_camera->move(delta);
-		}
-		return (false);
-	}
-};
-
-int		main(void)
+int		main(int argc, char **argv)
 {
 	c_application app = c_application("Aha (c)", Vector2(840, 680));
 	app.set_font_path("ressources/font/karma suture.ttf");
 	app.set_max_fps(660);
 
-	c_board_widget render = c_board_widget();
-	render.set_geometry(0, app.size());
-	render.activate();
+	block_tile = new c_tileset("ressources/texture/tileset.png", Vector2(9, 4));
+	icon_tile = new c_tileset("ressources/texture/icons.png", Vector2(3, 4));
+	c_game_engine engine = c_game_engine("ressources/maps/saved_map.map");
+	engine.set_geometry(0, app.size());
+	engine.activate();
 
-	c_tileset *tile = new c_tileset("ressources/texture/tileset.png", Vector2(9, 4));
 
-	for (size_t i = 0; i < 10; i++)
-		for (size_t j = 0; j < 10; j++)
-		{
-			if (i == 0 || i == 9 || j == 0 || j == 9)
-				render.add_voxel(primitive_voxel(Vector3(i, 0.0f, j), tile, 1));
-			else
-				render.add_voxel(primitive_voxel(Vector3(i, 0.0f, j), tile, 4, 0.5f));
-		}
-
-	render.board()->bake();
-	render.board()->set_texture(tile);
-	render.transparent_board()->bake();
-	render.transparent_board()->set_texture(tile);
+	
 
 	return (app.run());
 }
