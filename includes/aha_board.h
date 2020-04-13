@@ -20,8 +20,8 @@ public:
 	map<Vector2, c_chunk*>& chunks() { return _chunks; }
 	vector<Voxel_data>& edited_voxel() { return _edited_voxel; }
 	Voxel_data edited_voxel(size_t index) { return (_edited_voxel[index]); }
-	c_chunk *chunk(Vector2 chunk_pos) { if (_chunks.count(chunk_pos) == false)_chunks[chunk_pos] = new c_chunk(chunk_pos); return _chunks[chunk_pos]; }
-	c_chunk* chunks(Vector2 chunk_pos) { if (_chunks.count(chunk_pos) == false)return (nullptr); return _chunks[chunk_pos]; }
+	c_chunk* chunk(Vector2 chunk_pos);
+	c_chunk* chunks(Vector2 chunk_pos);
 	Vector2 get_chunk_pos(Vector3 abs_pos);
 	Vector3 get_rel_pos(Vector3 abs_pos);
 	int voxels(Vector3 pos);

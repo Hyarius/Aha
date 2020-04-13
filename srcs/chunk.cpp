@@ -187,9 +187,10 @@ void c_chunk::add_voxel(Vector3 rel_pos, int type)
 	_voxels[x][y][z] = type;
 	Voxel_data data = Voxel_data(Vector3(x, y, z), type);
 	_edited.push_back(data);
-	if (g_board != nullptr)
-		g_board->edited_voxel().push_back(Voxel_data(absolute_pos(Vector3(x, y, z)), type));
 	actualize();
+	if (g_board == nullptr)
+		return;
+	g_board->edited_voxel().push_back(Voxel_data(absolute_pos(Vector3(x, y, z)), type));
 	for (size_t i = 0; i < 6; i++)
 	{
 		Vector3 abs_pos = absolute_pos(rel_pos + voxel_neighbour[i]);

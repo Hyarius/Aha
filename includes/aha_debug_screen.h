@@ -8,12 +8,14 @@
 class c_debug_screen : public c_widget
 {
 private:
-	c_board* board;
-	c_editor_mode* board_widget;
+	class c_game_engine* _engine;
+
 public:
-	c_debug_screen(c_editor_mode* p_board_widget, c_widget* p_parent);
+	c_debug_screen(c_game_engine *p_engine, c_widget* p_parent = nullptr);
+	void draw_line(int& nb_line, string text);
 	void render();
-	void set_geometry_imp(Vector3 p_anchor, Vector3 p_area);
+	string parse_direction(Vector3 direction);
+	void set_geometry_imp(Vector2 p_achor, Vector2 p_area) {}
 };
 
 #endif

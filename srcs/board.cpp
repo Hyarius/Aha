@@ -64,7 +64,7 @@ Vector3 c_board::get_rel_pos(Vector3 abs_pos)
 	Vector3 result;
 
 	result = abs_pos - Vector3(chunk_pos.x * chunk_size.x, 0.0f, chunk_pos.y * chunk_size.z);
-	return (result);
+	return (result.floor());
 }
 int c_board::voxels(Vector3 pos)
 {
@@ -94,4 +94,18 @@ void c_board::change_voxel(Vector3 pos, int type)
 	Vector2 chunk_pos = get_chunk_pos(pos);
 	Vector3 rel_pos = get_rel_pos(pos);
 	chunk(chunk_pos)->change_voxel(rel_pos, type);
+}
+
+c_chunk* c_board::chunk(Vector2 chunk_pos)
+{
+	if (_chunks.count(chunk_pos) == false)
+		_chunks[chunk_pos] = new c_chunk(chunk_pos);
+	return _chunks[chunk_pos];
+}
+
+c_chunk* c_board::chunks(Vector2 chunk_pos)
+{
+	if (_chunks.count(chunk_pos) == false)
+		return (nullptr);
+	return _chunks[chunk_pos];
 }

@@ -27,6 +27,10 @@ public:
 	Vector3 pos() { return (_pos); }
 	string name() { return (_name); }
 	Team team() { return (_team); }
+	virtual void move(Vector3 delta)
+	{
+		_pos += delta;
+	}
 };
 
 #endif

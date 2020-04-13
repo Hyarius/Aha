@@ -31,9 +31,10 @@ public:
 			_shortcut[i]->activate();
 		}
 	}
+	Item* get_item() { Item** p_item = _shortcut[_index]->item(); if (p_item == nullptr)return(nullptr);return (*p_item); }
 	void edit_selected(int delta)
 	{
-		_index += delta;
+		_index -= delta;
 		while (_index < 0)
 			_index += 9;
 		while (_index >= 9)

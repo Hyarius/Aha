@@ -7,7 +7,7 @@ Vector3 chunk_size = { 15, 256, 15 };
 
 int		main(int argc, char **argv)
 {
-	c_application app = c_application("Aha (c)", Vector2(840, 680));
+	c_application app = c_application("Aha (c)", Vector2(0.8f, 0.8f));
 	app.set_font_path("ressources/font/karma suture.ttf");
 	app.set_max_fps(660);
 

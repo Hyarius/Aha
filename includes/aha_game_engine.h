@@ -4,6 +4,7 @@
 #include "jgl.h"
 #include "aha_board.h"
 #include "aha_player.h"
+#include "aha_debug_screen.h"
 
 class c_game_engine : public c_widget
 {
@@ -15,10 +16,10 @@ protected:
 	size_t _active_mode;
 	c_game_mode *_modes[1];
 
+	c_debug_screen* _debug_screen;
+
 	int _player_vision;
 	Vector2 _player_pos;
-
-	bool _mouse_active;
 
 public:
 	c_game_engine(string path, c_widget *p_parent = nullptr);
@@ -35,5 +36,7 @@ public:
 	void render();
 	void set_geometry_imp(Vector2 p_anchor, Vector2 p_area);
 };
+
+void save_map(c_game_engine* render);
 
 #endif
